@@ -18,6 +18,11 @@ const STATUS_COLORS: Record<ExchangeStatus, string> = {
   완료: 'bg-blue-100 text-blue-700',
 };
 
+type ExchangeUpdatePayload = {
+  status: ExchangeStatus;
+  admin_memo?: string;
+};
+
 export default function AdminExchangePage() {
   const [requests, setRequests] = useState<ExchangeRefundRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +63,7 @@ export default function AdminExchangePage() {
   const updateStatus = async (id: string, status: ExchangeStatus) => {
     setUpdatingId(id);
 
-    const updates: Partial<ExchangeRefundRequest> = { status };
+    const updates: ExchangeUpdatePayload = { status };
 
     if (adminMemo.trim()) {
       updates.admin_memo = adminMemo.trim();
@@ -66,7 +71,7 @@ export default function AdminExchangePage() {
 
     const { error } = await supabase
       .from('exchange_refund_requests')
-      .update(updates)
+      .update(updates as never)
       .eq('id', id);
 
     if (error) {
